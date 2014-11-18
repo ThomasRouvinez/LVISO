@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LiveFeed</string>
+    <string name="connection_button">CONNECT</string>
+    <string name="dummy_content">CONNECT\nREADER\n</string>
+    <string name="wizard_content"></string>
+
+</resources>
