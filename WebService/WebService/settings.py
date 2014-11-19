@@ -8,6 +8,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
+# Author: Thomas "Raste" Rouvinez
+# Creation date: 2014.11.18
+# Last modified: 2014.11.19
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -22,10 +26,10 @@ SECRET_KEY = 'vo0*ye^1hp5h7w2b#5uaa3h^2#!8$bq8xu_l+bi4=f8$0h_c60'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
