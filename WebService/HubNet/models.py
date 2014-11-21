@@ -19,20 +19,13 @@ class InterestTag(models.Model):
 class Participant(models.Model):
 	tagId = models.CharField(max_length=255)
 	gender = models.CharField(max_length=1)
+	interestTag = models.ForeignKey(InterestTag, blank=True, null=True)
 	
 	def __str__(self):
 		return self.tagId
 		
 	class Meta:
 		ordering = ('tagId',)
-		
-# DB recorded activity per sensor.
-class Record(models.Model):
-	tagId = models.CharField(max_length=255)
-	rssi = models.FloatField()
-	
-	def __str__(self):
-		return self.tagId
 	
 # DB Sensor fields.
 class Sensor(models.Model):
@@ -45,6 +38,9 @@ class Sensor(models.Model):
 	def __str__(self):
 		return "Sensor: " + self.description
 		
+	class Meta:
+		ordering = ('description', 'identifier', )
+		
 # DB Event fields.
 class Event(models.Model):
 	name = models.CharField(max_length=200)
@@ -53,9 +49,23 @@ class Event(models.Model):
 	interestTags = models.ManyToManyField(InterestTag, blank=True, null=True)
 	participants = models.ManyToManyField(Participant, blank=True, null=True)
 	sensors = models.ManyToManyField(Sensor, blank=True, null=True)
-	
+
 	def __str__(self):
 		return self.name	
 		
 	class Meta:
 		ordering = ('name',)
+		
+# DB recorded activity per sensor.
+class Record(models.Model):
+	tagId = models.CharField(max_length=255)
+	timeStamp = models.DateTimeField('time stamp', null=True)
+	rssi = models.FloatField()
+	event = models.ForeignKey(Event, null=True)
+	sensor = models.ForeignKey(Sensor, null=True)
+	
+	def __str__(self):
+		return self.tagId
+		
+	class Meta:
+		ordering = ('tagId',)

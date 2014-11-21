@@ -6,5 +6,6 @@ urlpatterns = patterns('',
     # url(r'^$', 'WebService.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
+	url(r'^hubnet/', include('HubNet.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

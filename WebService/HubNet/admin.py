@@ -1,5 +1,5 @@
 from django.contrib import admin
-from HubNet.models import InterestTag, Event, Sensor, Participant
+from HubNet.models import InterestTag, Event, Sensor, Participant, Record
 
 # Author: Thomas "Raste" Rouvinez
 # Creation date: 2014.11.18
@@ -34,6 +34,7 @@ class ParticipantsAdmin(admin.ModelAdmin):
 	fieldsets = [
 		(None, {'fields': ['tagId']}),
 		(None, {'fields': ['gender']}),
+		(None, {'fields': ['interestTag']}),
 	]
 	
 # --------------------------------------------------
