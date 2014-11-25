@@ -19,9 +19,6 @@ public class ForwardData {
 	private int zoneID;
 	private String tagIdentifier;
 	private double RSSI;
-	private double xCoordinate;
-	private double yCoordinate;
-	private double radius;
 	
 	// ---------------------------------------------------------------
 	// Constructor.
@@ -35,14 +32,11 @@ public class ForwardData {
 	/**
 	 * Full Constructor.
 	 */
-	public ForwardData(ZoneInfo zoneInfo, String tagIdentifier, double RSSI, Date timestamp){
+	public ForwardData(int zoneID, String tagIdentifier, double RSSI, Date timestamp){
 		this.timestamp = timestamp;
-		this.zoneID = zoneInfo.getZoneID();
+		this.zoneID = zoneID;
 		this.tagIdentifier = tagIdentifier;
 		this.RSSI = RSSI;
-		this.xCoordinate = zoneInfo.getX();
-		this.yCoordinate = zoneInfo.getY();
-		this.radius = zoneInfo.getRadius();
 	}
 
 	// ---------------------------------------------------------------
@@ -79,29 +73,5 @@ public class ForwardData {
 
 	public void setRSSI(double rSSI) {
 		RSSI = rSSI;
-	}
-
-	public double getxCoordinate() {
-		return xCoordinate;
-	}
-
-	public void setxCoordinate(int xCoordinate) {
-		this.xCoordinate = xCoordinate;
-	}
-
-	public double getyCoordinate() {
-		return yCoordinate;
-	}
-
-	public void setyCoordinate(int yCoordinate) {
-		this.yCoordinate = yCoordinate;
-	}
-
-	public double getRadius() {
-		return radius;
-	}
-
-	public void setRadius(int radius) {
-		this.radius = radius;
 	}
 }

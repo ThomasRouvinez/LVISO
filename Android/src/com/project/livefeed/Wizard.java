@@ -1,7 +1,9 @@
 package com.project.livefeed;
 
+import org.apache.http.HttpResponse;
+import com.project.livefeed.Objects.ForwardData;
 import com.project.livefeed.Objects.ZoneInfo;
-
+import HTTP.HTTPUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +17,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 public class Wizard extends Activity{
+	
+	public static String serverAddress = "http://192.168.1.43:80/hubnet";
 
 	// Handler and thread management for background activities.
 	private Handler handler;
@@ -26,9 +30,6 @@ public class Wizard extends Activity{
 	// Additional information storage.
 	private ZoneInfo zoneInfo;
 	private EditText zoneID;
-	private EditText x;
-	private EditText y;
-	private EditText radius;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -41,9 +42,6 @@ public class Wizard extends Activity{
 
 		// Get the edit text fields.
 		this.zoneID = (EditText)this.findViewById(R.id.editTextZoneID);
-		this.x = (EditText)this.findViewById(R.id.editTextX);
-		this.y = (EditText)this.findViewById(R.id.editTextY);
-		this.radius = (EditText)this.findViewById(R.id.EditTextRadius);
 
 		// Instantiate the object storing the information.
 		zoneInfo = new ZoneInfo();
@@ -54,7 +52,8 @@ public class Wizard extends Activity{
 
 			@Override
 			public void onClick(View v) {
-				AndroidUtlils.toastLong(context, "Works");
+				ForwardData sample = new ForwardData(1, "testTag", 0.5, null);
+				new HTTPUtils().execute(sample);
 			}
 		});
 	}

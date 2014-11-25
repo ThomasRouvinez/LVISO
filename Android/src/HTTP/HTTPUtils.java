@@ -1,6 +1,5 @@
 package HTTP;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -12,8 +11,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 
+import android.os.AsyncTask;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.livefeed.Wizard;
 import com.project.livefeed.Objects.ForwardData;
 
 /**
@@ -23,21 +24,22 @@ import com.project.livefeed.Objects.ForwardData;
  * @last modified: 2014.11.13
  * 
  */
-public class HTTPUtils {
+public class HTTPUtils extends AsyncTask<ForwardData, Void, HttpResponse>{
 
-	private static HttpClient httpClient = new DefaultHttpClient();
-	private static HttpResponse response;
+	@Override
+	protected HttpResponse doInBackground(ForwardData... data) {
 
-	public static HttpResponse sendJson(String postAddress, ForwardData data){
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpResponse response = null;
+
 		try {
 			// Create HTTP objects.
-			HttpPost httpPost = new HttpPost(postAddress);
+			HttpPost httpPost = new HttpPost(Wizard.serverAddress + "/irec");
 			httpPost.setHeader("content-type", "application/json");
-			response = null;
 
 			// Json conversion.
 			ObjectMapper mapper = new ObjectMapper();
-			String jsonValue = mapper.writeValueAsString(data);
+			String jsonValue = mapper.writeValueAsString(null);
 
 			// Convert to String.
 			StringEntity entity;
