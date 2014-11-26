@@ -34,12 +34,12 @@ public class HTTPUtils extends AsyncTask<ForwardData, Void, HttpResponse>{
 
 		try {
 			// Create HTTP objects.
-			HttpPost httpPost = new HttpPost(Wizard.serverAddress + "/irec");
+			HttpPost httpPost = new HttpPost(Wizard.serverAddress + "/irec/");
 			httpPost.setHeader("content-type", "application/json");
 
 			// Json conversion.
 			ObjectMapper mapper = new ObjectMapper();
-			String jsonValue = mapper.writeValueAsString(null);
+			String jsonValue = mapper.writeValueAsString(data);
 
 			// Convert to String.
 			StringEntity entity;

@@ -6,7 +6,7 @@ urlpatterns = patterns('',
     url(r'version', views.version, name='Version'),
 	
 	# Input record data view, returns success value.
-    url(r'irec$', views.input_record, name='Input Record'),
+    url(r'irec/$', views.input_record, name='Input Record'),
 	
 	# Output live feed for the required timestamp.
     url(r'olvf$', views.output_getLiveUpdate, name='Output Live Feed'),

@@ -1,8 +1,5 @@
 package com.project.livefeed;
 
-import org.apache.http.HttpResponse;
-import com.project.livefeed.Objects.ForwardData;
-import com.project.livefeed.Objects.ZoneInfo;
 import HTTP.HTTPUtils;
 import android.app.Activity;
 import android.content.Context;
@@ -15,6 +12,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import com.project.livefeed.Objects.ForwardData;
+import com.project.livefeed.Objects.RecordData;
 
 public class Wizard extends Activity{
 	
@@ -28,7 +27,6 @@ public class Wizard extends Activity{
 	private Context context;
 
 	// Additional information storage.
-	private ZoneInfo zoneInfo;
 	private EditText zoneID;
 
 	@Override
@@ -43,16 +41,17 @@ public class Wizard extends Activity{
 		// Get the edit text fields.
 		this.zoneID = (EditText)this.findViewById(R.id.editTextZoneID);
 
-		// Instantiate the object storing the information.
-		zoneInfo = new ZoneInfo();
-
 		// Buttons management.
 		this.buttonApply = (Button)this.findViewById(R.id.ButtonApply);
 		this.buttonApply.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				ForwardData sample = new ForwardData(1, "testTag", 0.5, null);
+				RecordData values[] = new RecordData[2];
+				values[0] = new RecordData("tag1test-457389", 18.2);
+				values[1] = new RecordData("tag2test-786784", 12);
+						
+				ForwardData sample = new ForwardData(null, "122", "4", values);
 				new HTTPUtils().execute(sample);
 			}
 		});

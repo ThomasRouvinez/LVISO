@@ -1,12 +1,13 @@
 package com.project.livefeed.Objects;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 
  * @author Thomas Rouvinez
  * @creation date: 2014.11.13
- * @last modified: 2014.11.13
+ * @last modified: 2014.11.26
  *
  */
 public class ForwardData {
@@ -16,9 +17,9 @@ public class ForwardData {
 	// ---------------------------------------------------------------
 	
 	private Date timestamp;
-	private int zoneID;
-	private String tagIdentifier;
-	private double RSSI;
+	private String sensorID;
+	private String eventID;
+	private RecordData values[];
 	
 	// ---------------------------------------------------------------
 	// Constructor.
@@ -32,11 +33,11 @@ public class ForwardData {
 	/**
 	 * Full Constructor.
 	 */
-	public ForwardData(int zoneID, String tagIdentifier, double RSSI, Date timestamp){
+	public ForwardData(Date timestamp, String eventID, String sensorID, RecordData values[]){
 		this.timestamp = timestamp;
-		this.zoneID = zoneID;
-		this.tagIdentifier = tagIdentifier;
-		this.RSSI = RSSI;
+		this.setEventID(eventID);
+		this.setSensorID(sensorID);
+		this.setValues(values);
 	}
 
 	// ---------------------------------------------------------------
@@ -51,27 +52,27 @@ public class ForwardData {
 		this.timestamp = timestamp;
 	}
 
-	public int getZoneID() {
-		return zoneID;
+	public String getSensorID() {
+		return sensorID;
 	}
 
-	public void setZoneID(int zoneID) {
-		this.zoneID = zoneID;
+	public void setSensorID(String sensorID) {
+		this.sensorID = sensorID;
 	}
 
-	public String getTagIdentifier() {
-		return tagIdentifier;
+	public String getEventID() {
+		return eventID;
 	}
 
-	public void setTagIdentifier(String tagIdentifier) {
-		this.tagIdentifier = tagIdentifier;
+	public void setEventID(String eventID) {
+		this.eventID = eventID;
 	}
 
-	public double getRSSI() {
-		return RSSI;
+	public RecordData[] getValues() {
+		return values;
 	}
 
-	public void setRSSI(double rSSI) {
-		RSSI = rSSI;
+	public void setValues(RecordData values[]) {
+		this.values = values;
 	}
 }
