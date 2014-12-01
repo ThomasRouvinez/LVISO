@@ -55,8 +55,7 @@ class Event(models.Model):
 		
 	class Meta:
 		ordering = ('name',)
-		
-# DB recorded activity per sensor.
+
 class Record(models.Model):
 	tagId = models.CharField(max_length=255)
 	timeStamp = models.DateTimeField('time stamp', null=True)

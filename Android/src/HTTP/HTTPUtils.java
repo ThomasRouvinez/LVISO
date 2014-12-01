@@ -13,7 +13,10 @@ import org.apache.http.protocol.HTTP;
 
 import android.os.AsyncTask;
 
+import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerator.Feature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 import com.project.livefeed.Wizard;
 import com.project.livefeed.Objects.ForwardData;
 
@@ -37,11 +40,26 @@ public class HTTPUtils extends AsyncTask<ForwardData, Void, HttpResponse>{
 			HttpPost httpPost = new HttpPost(Wizard.serverAddress + "/irec/");
 			httpPost.setHeader("content-type", "application/json");
 
-			// Json conversion.
-			ObjectMapper mapper = new ObjectMapper();
-			String jsonValue = mapper.writeValueAsString(data);
+			// JSON Formatting:
+			String jsonValue = "{\"eventID\" : " + data[0].getEventID() + 
+					", \"sensorID\" : " + data[0].getSensorID() +
+					", \"timeStamp\" : \"" + data[0].getTimestamp() + "\" ," +
+					" \"records\" : [";
+			
+			// Add each record.
+			for(int i = 0 ; i < data[0].getValues().length ; i++){
+				jsonValue += "{\"tag\" : \"" + data[0].getValues()[i].getTag() + "\" ," +
+						"\"rssi\" : " + data[0].getValues()[i].getRSSI() + "}";
+				
+				if(i + 1 != data[0].getValues().length){
+					jsonValue += ", ";
+				}
+			}
+			
+			// Add ending.
+			jsonValue += "]}";
 
-			// Convert to String.
+			// Convert to HTTP entity.
 			StringEntity entity;
 			entity = new StringEntity(jsonValue, HTTP.UTF_8);
 			httpPost.setEntity(entity);

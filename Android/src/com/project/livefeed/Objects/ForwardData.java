@@ -1,5 +1,8 @@
 package com.project.livefeed.Objects;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +19,7 @@ public class ForwardData {
 	// Variables.
 	// ---------------------------------------------------------------
 	
-	private Date timestamp;
+	private String timestamp;
 	private String sensorID;
 	private String eventID;
 	private RecordData values[];
@@ -33,8 +36,11 @@ public class ForwardData {
 	/**
 	 * Full Constructor.
 	 */
-	public ForwardData(Date timestamp, String eventID, String sensorID, RecordData values[]){
-		this.timestamp = timestamp;
+	public ForwardData(String eventID, String sensorID, RecordData values[]){
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Calendar cal = Calendar.getInstance();
+		
+		this.timestamp = dateFormat.format(cal.getTime());
 		this.setEventID(eventID);
 		this.setSensorID(sensorID);
 		this.setValues(values);
@@ -44,11 +50,11 @@ public class ForwardData {
 	// Getter-setters.
 	// ---------------------------------------------------------------
 	
-	public Date getTimestamp() {
+	public String getTimestamp() {
 		return timestamp;
 	}
 
-	public void setTimestamp(Date timestamp) {
+	public void setTimestamp(String timestamp) {
 		this.timestamp = timestamp;
 	}
 

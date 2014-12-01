@@ -17,7 +17,7 @@ import com.project.livefeed.Objects.RecordData;
 
 public class Wizard extends Activity{
 	
-	public static String serverAddress = "http://192.168.1.43:80/hubnet";
+	public static String serverAddress = "http://192.168.1.44:80/hubnet";
 
 	// Handler and thread management for background activities.
 	private Handler handler;
@@ -47,11 +47,11 @@ public class Wizard extends Activity{
 
 			@Override
 			public void onClick(View v) {
-				RecordData values[] = new RecordData[2];
+				RecordData values[] = new RecordData[2]; 
 				values[0] = new RecordData("tag1test-457389", 18.2);
 				values[1] = new RecordData("tag2test-786784", 12);
 						
-				ForwardData sample = new ForwardData(null, "122", "4", values);
+				ForwardData sample = new ForwardData("3", "2", values);
 				new HTTPUtils().execute(sample);
 			}
 		});

@@ -1,8 +1,15 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
+from HubNet.models import Record, Event, Sensor
+from datetime import datetime
 
+import json
+import yaml
+import datetime
 import logging
+import urllib
+import re
 
 # Get the version of the webservice.
 def version(request):
@@ -10,20 +17,32 @@ def version(request):
 
 # Post a new record for an event & sensor.
 @csrf_exempt
-def input_record(request):
-	if request.is_ajax():
-		if request.method == 'POST':
-			try:
-				data=json.loads(request.body)
-				i_timestamp=data['timestamp']
-				i_sensor=data['sensorID']
-				i_event=data['eventID']
-				i_valuesArray=data['values']
-				
-			except:
-				logging.debug('record failed')
+def input_record(request):	
+	if request.method == 'POST':
+		try:
+			# Read data from the JSON payload.
+			raw = yaml.load(request.body)
+			str_data = str(raw).replace("'", '"')
+			data = json.loads(str_data)
+	
+			i_eventID = data["eventID"]
+			i_sensorID = data["sensorID"]
+			i_timeStamp = data["timeStamp"]
+			i_records = data["records"]
 			
-	return HttpResponse('OK')
+			# Convert time stamps correctly.
+			c_timestamp = datetime.datetime.strptime(str(i_timeStamp), "%Y/%m/%d %H:%M:%S")
+			e = Event.objects.get(pk=i_eventID)
+			s = Sensor.objects.get(pk=i_sensorID)
+			
+			for rec in i_records:
+				Record.objects.create(event=e, sensor=s, timeStamp=c_timestamp, tagId=rec["tag"], rssi=rec["rssi"])
+			
+		except:
+			logging.debug('record failed')
+			return HttpResponse('FAILED')
+			
+	return HttpResponse("OK")
 
 # Get updated live feed.
 def output_getLiveUpdate(request):
