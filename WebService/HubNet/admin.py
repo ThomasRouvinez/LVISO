@@ -52,6 +52,14 @@ class SensorsAdmin(admin.ModelAdmin):
 	]
 	
 # --------------------------------------------------
+# Record.
+# --------------------------------------------------
+
+class RecordAdmin(admin.ModelAdmin):
+	list_display = ('event', 'timeStamp', 'tagId')
+	search_fields = ['event', 'timeStamp', 'tagId']
+	
+# --------------------------------------------------
 # Events.
 # --------------------------------------------------
 
@@ -69,4 +77,4 @@ admin.site.register(Event, EventAdmin)
 admin.site.register(InterestTag, InterestTagAdmin)
 admin.site.register(Participant, ParticipantsAdmin)
 admin.site.register(Sensor, SensorsAdmin)
-admin.site.register(Record)
+admin.site.register(Record, RecordAdmin)

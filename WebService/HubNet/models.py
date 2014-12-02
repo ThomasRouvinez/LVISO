@@ -66,5 +66,13 @@ class Record(models.Model):
 	def __str__(self):
 		return self.tagId
 		
+	def as_json(self):
+		return dict(
+			eventID = self.event.pk,
+			sensorID = self.sensor.pk,
+			timeStamp = self.timeStamp,
+			tagID = self.tagId,
+			rssi = self.rssi)
+		
 	class Meta:
 		ordering = ('tagId',)
