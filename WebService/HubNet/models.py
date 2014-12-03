@@ -18,7 +18,6 @@ class InterestTag(models.Model):
 # DB Participant fields.
 class Participant(models.Model):
 	tagId = models.CharField(max_length=255)
-	gender = models.CharField(max_length=1)
 	interestTag = models.ForeignKey(InterestTag, blank=True, null=True)
 	
 	def __str__(self):
@@ -37,6 +36,14 @@ class Sensor(models.Model):
 	
 	def __str__(self):
 		return "Sensor: " + self.description
+		
+	def as_json(self):
+		return dict(
+			identifier = self.identifier,
+			description = self.description,
+			x = self.x,
+			y = self.y,
+			radius = self.radius)
 		
 	class Meta:
 		ordering = ('description', 'identifier', )
@@ -70,7 +77,7 @@ class Record(models.Model):
 		return dict(
 			eventID = self.event.pk,
 			sensorID = self.sensor.pk,
-			timeStamp = self.timeStamp,
+			timeStamp = str(self.timeStamp),
 			tagID = self.tagId,
 			rssi = self.rssi)
 		

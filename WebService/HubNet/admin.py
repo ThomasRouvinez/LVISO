@@ -33,7 +33,6 @@ class ParticipantsInline(admin.TabularInline):
 class ParticipantsAdmin(admin.ModelAdmin):
 	fieldsets = [
 		(None, {'fields': ['tagId']}),
-		(None, {'fields': ['gender']}),
 		(None, {'fields': ['interestTag']}),
 	]
 	
