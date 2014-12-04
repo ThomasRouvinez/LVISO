@@ -12,6 +12,11 @@ class InterestTag(models.Model):
 	def __str__(self):
 		return self.description	
 		
+	def as_json(self):
+		return dict(
+			description = self.description,
+			color = self.color)
+		
 	class Meta:
 		ordering = ('description',)
 
@@ -22,6 +27,11 @@ class Participant(models.Model):
 	
 	def __str__(self):
 		return self.tagId
+		
+	def as_json(self):
+		return dict(
+			tagID = self.tagId,
+			interstTag = self.interestTag.as_json())
 		
 	class Meta:
 		ordering = ('tagId',)
