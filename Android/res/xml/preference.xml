@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory
+            android:title="HTTP Settings">
+            
+        <EditTextPreference
+                android:key="serverip_preference"
+                android:title="IP Address"
+                android:summary="Address of the web service"
+                android:dialogTitle="IP Address" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+            android:title="Records Information">
+            
+        <EditTextPreference
+            	android:inputType="number" 
+                android:key="eventid_preference"
+                android:title="Event Identifier"
+                android:summary="Identifier of the event it should send records to..."
+                android:dialogTitle="Event Identifier" />
+        
+        <EditTextPreference
+            	android:inputType="number"
+                android:key="sensorid_preference"
+                android:title="Sensor Identifier"
+                android:summary="Identifier of the current sensor"
+                android:dialogTitle="Sensor Identifier" />
+    </PreferenceCategory>
+    
+     <PreferenceCategory
+            android:title="Data Rate Settings">
+        
+         	<EditTextPreference
+         	    android:inputType="numberDecimal"
+                android:key="datarate_preference"
+                android:title="Data rate"
+                android:summary="Frequency of transmissions in seconds"
+                android:dialogTitle="Data Rate" />
+     </PreferenceCategory>
+</PreferenceScreen>

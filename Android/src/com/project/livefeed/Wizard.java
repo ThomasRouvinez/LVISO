@@ -2,32 +2,30 @@ package com.project.livefeed;
 
 import HTTP.HTTPUtils;
 import android.app.Activity;
+import android.app.Application;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
+
 import com.project.livefeed.Objects.ForwardData;
 import com.project.livefeed.Objects.RecordData;
 
 public class Wizard extends Activity{
-	
+
 	public static String serverAddress = "http://192.168.1.44:80/hubnet";
+	public static SharedPreferences preferences;
+	public static Context context;
 
 	// Handler and thread management for background activities.
 	private Handler handler;
-
-	// GUI-related variables.
-	private Button buttonApply;
-	private Context context;
-
-	// Additional information storage.
-	private EditText zoneID;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -38,23 +36,37 @@ public class Wizard extends Activity{
 		// Setup the handler.
 		handler = new Handler();
 
-		// Get the edit text fields.
-		this.zoneID = (EditText)this.findViewById(R.id.editTextZoneID);
+		// Display the fragment as the main content.
+		FragmentManager mFragmentManager = getFragmentManager();
+		FragmentTransaction mFragmentTransaction = mFragmentManager.beginTransaction();
+		PrefsFragment mPrefsFragment = new PrefsFragment();
+		mFragmentTransaction.replace(android.R.id.content, mPrefsFragment);
+		mFragmentTransaction.commit();
 
-		// Buttons management.
-		this.buttonApply = (Button)this.findViewById(R.id.ButtonApply);
-		this.buttonApply.setOnClickListener(new OnClickListener() {
+		preferences = PreferenceManager.getDefaultSharedPreferences(context);
+	}
 
-			@Override
-			public void onClick(View v) {
-				RecordData values[] = new RecordData[2]; 
-				values[0] = new RecordData("tag1test-457389", 18.2);
-				values[1] = new RecordData("tag2test-786784", 12);
-						
-				ForwardData sample = new ForwardData("3", "2", values);
-				new HTTPUtils().execute(sample);
+	public static class PrefsFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener{
+
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+
+			// Load the preferences from an XML resource
+			addPreferencesFromResource(R.xml.preference);
+			PreferenceManager.getDefaultSharedPreferences(Wizard.context).registerOnSharedPreferenceChangeListener(this);
+		}
+
+		@Override
+		public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+			if (key.equals("serverip_preference")) {
+				String address = sharedPreferences.getString("serverip_preference", "");
+				
+				if(address != ""){
+					Wizard.serverAddress = "http://" + address + ":80/hubnet";
+				}
 			}
-		});
+		}
 	}
 
 	// -----------------------------------------------------------------------
@@ -74,23 +86,17 @@ public class Wizard extends Activity{
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
 		case R.id.startAction:
-			// Disable the apply button.
-			buttonApply.setVisibility(View.GONE);
-			buttonApply.setEnabled(false);
-
 			// Start reading.
 			AndroidUtlils.toastShort(context, "Start Reading");
-			handler.postDelayed(runnable, 3000);
+			handler.postDelayed(runnable, (long) (1000 * Float.parseFloat(preferences.getString("datarate_preference", "5"))));
 			return true;
-		case R.id.stopAction:
-			// Disable the apply button.
-			buttonApply.setVisibility(View.VISIBLE);
-			buttonApply.setEnabled(true);
 
+		case R.id.stopAction:
 			// Stop reading.
 			AndroidUtlils.toastShort(context, "Stop Reading");
 			handler.removeCallbacks(runnable);
 			return true;
+
 		default:
 			return super.onOptionsItemSelected(item);
 		}
@@ -105,15 +111,22 @@ public class Wizard extends Activity{
 		public void run() {
 			// Test.
 			AndroidUtlils.toastShort(context, "Read Test...");
-			
+
 			// Read values from reader.
-			
+
 			// Pack values.
-			
+			RecordData values[] = new RecordData[2]; 
+			values[0] = new RecordData("tag1test-457389", 18.2);
+			values[1] = new RecordData("tag2test-786784", 12);
+			ForwardData sample = new ForwardData(preferences.getString("eventid_preference", "-1"), preferences.getString("sensorid_preference", "-1"), values);
+
 			// Transmit the values.
 
+
+			new HTTPUtils().execute(sample);
+
 			// Restart the loop.
-			handler.postDelayed(this, 3000);
+			handler.postDelayed(this, (long) (1000 * Float.parseFloat(preferences.getString("datarate_preference", "5"))));
 		}
 	};
 }

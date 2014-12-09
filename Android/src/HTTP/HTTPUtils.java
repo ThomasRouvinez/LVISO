@@ -13,10 +13,6 @@ import org.apache.http.protocol.HTTP;
 
 import android.os.AsyncTask;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonGenerator.Feature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatTypes;
 import com.project.livefeed.Wizard;
 import com.project.livefeed.Objects.ForwardData;
 
