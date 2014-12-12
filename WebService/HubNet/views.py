@@ -101,7 +101,7 @@ def output_live_distinct(request, eventID):
 			
 		except:
 			logging.debug('request live distinct failed')
-			return HttpResponse('FAILED')
+			return HttpResponse('{[]}', "application/json")
 				
 	return HttpResponse(json.dumps(results), "application/json")
 

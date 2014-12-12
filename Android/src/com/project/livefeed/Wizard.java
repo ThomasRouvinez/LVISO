@@ -20,7 +20,7 @@ import com.project.livefeed.Objects.RecordData;
 
 public class Wizard extends Activity{
 
-	public static String serverAddress = "http://192.168.1.44:80/hubnet";
+	public static String serverAddress = "http://192.168.1.31:80/hubnet";
 	public static SharedPreferences preferences;
 	public static Context context;
 
@@ -121,8 +121,6 @@ public class Wizard extends Activity{
 			ForwardData sample = new ForwardData(preferences.getString("eventid_preference", "-1"), preferences.getString("sensorid_preference", "-1"), values);
 
 			// Transmit the values.
-
-
 			new HTTPUtils().execute(sample);
 
 			// Restart the loop.

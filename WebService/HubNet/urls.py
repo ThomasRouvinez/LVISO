@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 	url(r'^lvd/(?P<eventID>\d+)/$', views.output_live_distinct, name='Output Live Distinct'),
 	
 	# Outputs configuration for an event.
-	url(r'^cfg/(?P<eventID>\d+)/$', views.output_config, name='Output Configuration'),
+	url(r'^cfg(?P<eventID>\d+).*', views.output_config, name='Output Configuration'),
 	
 	# Outputs all records for an event.
 	url(r'^arec/(?P<eventID>\d+)/$', views.output_all_records, name='Output All Records'),
