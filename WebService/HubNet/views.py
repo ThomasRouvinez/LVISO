@@ -107,17 +107,23 @@ def output_live_distinct(request, eventID):
 
 		
 # Get config file.
+@csrf_exempt
 def output_config(request, eventID):
 	if request.method == 'GET':
 		try:
 			sensors = Sensor.objects.filter(event__pk = eventID)
 			results = [ob.as_json() for ob in sensors]
 			
+			if 'callback' in request.REQUEST:
+                # Send a JSONP response.
+				data = '%s(%s);' % (request.REQUEST['callback'], results)
+				return HttpResponse(data, "text/javascript")
+				
 		except:
 			logging.debug('request config failed')
 			return HttpResponse('FAILED')
-				
-	return HttpResponse(json.dumps(results), "application/json")
+			
+		return HttpResponse(json.dumps(results), "application/json")
 	
 # Get All records for an event.
 def output_all_records(request, eventID):

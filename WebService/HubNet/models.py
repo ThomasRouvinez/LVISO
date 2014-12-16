@@ -14,8 +14,8 @@ class InterestTag(models.Model):
 		
 	def as_json(self):
 		return dict(
-			description = self.description,
-			color = self.color)
+			description = str(self.description),
+			color = str(self.color))
 		
 	class Meta:
 		ordering = ('description',)
@@ -50,7 +50,7 @@ class Sensor(models.Model):
 	def as_json(self):
 		return dict(
 			identifier = self.identifier,
-			description = self.description,
+			description = str(self.description),
 			x = self.x,
 			y = self.y,
 			radius = self.radius)

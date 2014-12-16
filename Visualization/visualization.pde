@@ -8,6 +8,7 @@ final float framerate = 60;
 
 // Lists.
 ArrayList sensors;
+ArrayList positioningValues; //([0] = multf)
 
 // -----------------------------------------------------------
 // Setup.
@@ -17,9 +18,10 @@ void setup() {
 	size(width,height);
 	frameRate(framerate);
 	sensors = new ArrayList();
-  
+	positioningValues = new ArrayList();
+	
 	// Initial setup.
-	background(150);
+	background(200);
 	fill(#000000);
 	rect(0, height-70, width, 70);
 }
@@ -41,7 +43,7 @@ void draw(){
 // -----------------------------------------------------------
 
 void mouseClicked() {
-	addSensor(2, mouseX, mouseY, 75);
+	//addSensor(2, mouseX, mouseY, 75);
 }
 
 // -----------------------------------------------------------
@@ -52,6 +54,10 @@ Point addSensor(int id, int x, int y, int radius) {
 	Sensor pt = new Sensor(id, x, y, radius);
     sensors.add(pt);
     return pt;
+}
+
+void addPosValue(float value){
+	positioningValues.add(value);
 }
 
 // -----------------------------------------------------------
@@ -66,6 +72,6 @@ class Sensor{
     void draw() {
 		stroke(255,255,255);
 		fill(#000000);
-		ellipse(x,y,radius,radius);
+		ellipse(x,y,60,60);
 	}
 }

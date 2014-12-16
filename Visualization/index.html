@@ -2,32 +2,57 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Live Feed</title>
+		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
 		<script src="processing.js" type="text/javascript"></script>
 		
 		<script type="text/javascript">
-		function getCGF(id) {
-			getJSONP('http://127.0.0.1:80/hubnet/cfg'+id+'&callback=?', function(data){
-				alert("WORKED");
-			});  
-		}
-		
-		function getJSONP(url, success) {
-			var ud = '_' + +new Date,
-				script = document.createElement('script'),
-				head = document.getElementsByTagName('head')[0] 
-					   || document.documentElement;
-
-			window[ud] = function(data) {
-				head.removeChild(script);
-				success && success(data);
-			};
-
-			script.src = url.replace('callback=?', 'callback=' + ud);
-			head.appendChild(script);
-		}
+			// Function to get the configuration.
+			function getCFG(id) {
+				$.getJSON('http://192.168.1.44:80/hubnet/cfg'+id+'?callback=?', function(data) {
+					// Variables.
+					var pjs = Processing.getInstanceById('processing');
+					var multf = 0.0;
+					var maxX = 0.0;
+					var maxY = 0.0;
+					
+					// The JSON is an array of sensor objects.
+				    for(p=0, end=data.length; p<end; p++) {
+						var sensor = data[p];
+						
+						// Identify boundaries for automatic scaling.
+						if(sensor.x + (sensor.radius/2) > maxX){
+							maxX = sensor.x + (sensor.radius/2);
+						}
+						
+						if(sensor.y + (sensor.radius/2) > maxY){
+							maxY = sensor.y + (sensor.radius/2);
+						}
+					}
+					
+					// Determine multiplication factor for scaling.
+					multf = Math.round($(window).height() / maxY);
+					multf = multf - (multf / 10);
+					
+					if(maxX * multf > $(window).width()){
+						var excedent =  maxX * multf - $(window).width();
+						var percentage = excedent / $(window).width();
+						
+						// Apply new value one the multiplication factor.
+						multf = Math.round(multf - (multf * percentage));
+					}
+					
+					// Add the sensors to the array list in processing.
+					for(p=0, end=data.length; p<end; p++) {
+						var sensor = data[p];
+						pjs.addSensor(sensor.identifier, sensor.x * multf, sensor.y * multf, sensor.radius);
+					}
+				});
+			}
+			
 		</script>
 	</head>
-	<body onload="getCGF(3)">
-		<canvas data-processing-sources="visualization.pde"></canvas>
+	<body onload="getCFG(3)">
+		<canvas id="processing" data-processing-sources="visualization.pde"></canvas>
 	</body>
 </html>
