@@ -2,15 +2,22 @@
 // Variables.
 // -----------------------------------------------------------
 
+// Constants.
+final int rssiThreshold = 12;	// to be defined with real rests on the readers.
 final int width = window.innerWidth;
 final int height = window.innerHeight;
 final float framerate = 0.5;
+final int tableSize = height / 12;
+final int firstRawSize = height / 7;
 
 // Lists.
 ArrayList sensors;
 ArrayList participants;
 ArrayList positioningValues; //([0] = multf)
+
+// Hashmaps.
 HashMap<String,String> participantColor;
+HashMap<String,String> interestTags;
 HashMap<Integer,Integer> tableCount;
 HashMap<Integer,Integer> tableDrawn;
 
@@ -25,6 +32,7 @@ void setup() {
 	participants = new ArrayList();
 	positioningValues = new ArrayList();
 	participantColor = new HashMap<String,String>();
+	interestTags = new HashMap<String,String>();
 	tableCount = new HashMap<Integer,Integer>();
 	tableDrawn = new HashMap<Integer,Integer>();
 }
@@ -34,15 +42,19 @@ void setup() {
 // -----------------------------------------------------------
 
 void draw(){
-	// Initial setup.
-	background(200);
-	fill(#000000);
-	rect(0, height-70, width, 70);
+	// Background.
+	fill(#ffffff);
+	rect(0, 0, width, height-(height / 10));
 	
-	// Draw all black circles for shadowing.
+	// Draw sensors backgrounds.
 	for(int p=0, end=sensors.size(); p<end; p++){
 		Sensor pt = (Sensor) sensors.get(p);
-		pt.draw(); 
+		
+		if(tableCount.get(pt.id) > 0){
+			stroke(0,0,0);
+			fill(#000000);
+			ellipse(pt.x,pt.y,firstRawSize,firstRawSize);
+		}
 	}
 	
 	// Draw all participants.
@@ -60,7 +72,7 @@ void draw(){
 		// Draw the participant.
 		fill(unhex(tagColor));
 		stroke(0, 0, 0);
-		drawSegment(pa.sensor.x, pa.sensor.y, 100, 100, drawn * slice, (drawn + 1) * slice);
+		drawSegment(pa.sensor.x, pa.sensor.y, firstRawSize, firstRawSize, (drawn * slice)+2, ((drawn + 1) * slice) -2);
 		tableDrawn.put(pa.sensor.id, tableDrawn.get(pa.sensor.id) + 1);
 	}
 	
@@ -106,8 +118,46 @@ void addPosValue(float value){
 	positioningValues.add(value);
 }
 
+void addInterestColor(String color, String description){
+	if(interestTags.containsKey(color.replace('#','')) == false){
+		String tagColor = color.replace('#','');
+		interestTags.put(tagColor, description);
+	}
+}
+
 void drawSegment(int x, int y, int width, int height, float startAngle, float stopAngle){ 
 	arc(x, y, width, height, radians(startAngle), radians(stopAngle));
+}
+
+void drawLegendBar(){
+	// Compute display.
+	int loop = 0;
+	int count = interestTags.size();
+	int spacing = (width - (width / 10)) / count;
+	int leftMargin = (width / 20);
+	int topMargin = height-(height / 11);
+	int fontSize = width / 55;
+	
+	// Draw the bar.
+	fill(#000000);
+	rect(0, height-(height / 10), width, (height / 10));
+	
+	// Draw the legends.
+	for (Map.Entry entry : interestTags.entrySet()){
+		// Get appropriate color.
+		String tagColor = entry.getKey();
+		tagColor = "FF" + tagColor;
+		
+		// Draw the participant.
+		fill(unhex(tagColor));
+		rect(leftMargin + (loop * spacing), topMargin, (height / 20), (height / 20));
+		
+		fill(#ffffff);
+		textSize(fontSize);
+		text(entry.getValue(), leftMargin + (loop * spacing) + (height / 18), topMargin + (height / 25)); 
+		
+		loop += 1;
+	}
 }
 
 // -----------------------------------------------------------
@@ -131,7 +181,7 @@ class Sensor{
     void draw() {
 		stroke(255,255,255);
 		fill(#000000);
-		ellipse(x,y,60,60);
+		ellipse(x,y,tableSize,tableSize);
 	}
 }
 

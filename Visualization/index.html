@@ -15,8 +15,12 @@
 						var pjs = Processing.getInstanceById('processing');
 						var participant = data[p];
 
+						// Gather data about participants and the interest tags for rendering.
 						pjs.addParticipantConfig(participant.tagID, participant.interestTag.color);
+						pjs.addInterestColor(participant.interestTag.color, participant.interestTag.description);
 					}
+					
+					pjs.drawLegendBar();
 				});
 
 				// Get the sensor configuration.
