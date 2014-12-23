@@ -30,8 +30,8 @@ class Participant(models.Model):
 		
 	def as_json(self):
 		return dict(
-			tagID = self.tagId,
-			interstTag = self.interestTag.as_json())
+			tagID = str(self.tagId),
+			interestTag = self.interestTag.as_json())
 		
 	class Meta:
 		ordering = ('tagId',)
@@ -88,7 +88,7 @@ class Record(models.Model):
 			eventID = self.event.pk,
 			sensorID = self.sensor.pk,
 			timeStamp = str(self.timeStamp),
-			tagID = self.tagId,
+			tagID = str(self.tagId),
 			rssi = self.rssi)
 		
 	class Meta:

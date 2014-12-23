@@ -18,6 +18,15 @@ import re
 # Get the version of the webservice.
 def version(request):
 	return HttpResponse("v0.1A")
+	
+# Get the time of the webservice.
+def time(request):
+	if 'callback' in request.REQUEST:
+		# Send a JSONP response.
+		data = '%s({\'timeStamp\' : \'%s\'});' % (request.REQUEST['callback'], datetime.datetime.now().replace(microsecond=0))
+		return HttpResponse(data, "text/javascript")
+
+	return HttpResponse(str(datetime.datetime.now().replace(microsecond=0)))
 
 # Post a new record for an event & sensor.
 @csrf_exempt
@@ -53,24 +62,33 @@ def input_record(request):
 
 # Get updated live feed.
 @csrf_exempt
-def output_getLiveUpdate(request):
+def output_getLiveUpdate(request, eventID, timeStamp):
 	if request.method == 'GET':
 		try:
-			# Read data from the JSON payload.
-			raw = yaml.load(request.body)
-			str_data = str(raw).replace("'", '"')
-			data = json.loads(str_data)
-			
-			i_eventID = data["eventID"]
-			i_timeStamp = data["timeStamp"]
+			i_eventID = int(str(unicode(eventID)))
+			i_timeStamp = str(unicode(timeStamp))
 			
 			# Prepare request context.
-			c_timestamp = datetime.datetime.strptime(str(i_timeStamp), "%Y/%m/%d %H:%M:%S")
+			c_timestamp = datetime.datetime.strptime(i_timeStamp, "%Y-%m-%d %H:%M:%S")
 			
 			# Gather list of records.
-			list = Record.objects.filter(event_pk=i_eventID).filter(timeStamp=c_timestamp)
+			records = Record.objects.filter(event__pk=i_eventID).filter(timeStamp=c_timestamp)
 			
-			results = [ob.as_json() for ob in list]
+			# Sort distinct results.
+			distinctRecords = []
+			seen = set()
+		
+			for rec in records:
+				if rec.tagId not in seen:
+					distinctRecords.append(rec)
+					seen.add(rec.tagId)
+		
+			results = [ob.as_json() for ob in distinctRecords]
+			
+			if 'callback' in request.REQUEST:
+                # Send a JSONP response.
+				data = '%s(%s);' % (request.REQUEST['callback'], results)
+				return HttpResponse(data, "text/javascript")
 			
 		except:
 			logging.debug('request record failed')
@@ -98,6 +116,11 @@ def output_live_distinct(request, eventID):
 					seen.add(rec.tagId)
 		
 			results = [ob.as_json() for ob in distinctRecords]
+			
+			if 'callback' in request.REQUEST:
+                # Send a JSONP response.
+				data = '%s(%s);' % (request.REQUEST['callback'], results)
+				return HttpResponse(data, "text/javascript")
 			
 		except:
 			logging.debug('request live distinct failed')
@@ -157,6 +180,11 @@ def output_all_participants(request, eventID):
 		try:
 			participants = Participant.objects.filter(event__pk=eventID)
 			results = [ob.as_json() for ob in participants]
+			
+			if 'callback' in request.REQUEST:
+                # Send a JSONP response.
+				data = '%s(%s);' % (request.REQUEST['callback'], results)
+				return HttpResponse(data, "text/javascript")
 			
 		except:
 			logging.debug('request all interest tags failed')

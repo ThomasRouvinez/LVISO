@@ -9,7 +9,18 @@
 		<script type="text/javascript">
 			// Function to get the configuration.
 			function getCFG(id) {
-				$.getJSON('http://192.168.1.44:80/hubnet/cfg'+id+'?callback=?', function(data) {
+				// Gather the information about the participants and their interest tags.
+				$.getJSON('http://127.0.0.1:80/hubnet/apar/'+id+'?callback=?', function(data) {
+					for(p=0, end=data.length; p<end; p++){
+						var pjs = Processing.getInstanceById('processing');
+						var participant = data[p];
+
+						pjs.addParticipantConfig(participant.tagID, participant.interestTag.color);
+					}
+				});
+
+				// Get the sensor configuration.
+				$.getJSON('http://127.0.0.1:80/hubnet/cfg'+id+'?callback=?', function(data) {
 					// Variables.
 					var pjs = Processing.getInstanceById('processing');
 					var multf = 0.0;
@@ -32,7 +43,7 @@
 					
 					// Determine multiplication factor for scaling.
 					multf = Math.round($(window).height() / maxY);
-					multf = multf - (multf / 10);
+					multf = multf - (multf / 7);
 					
 					if(maxX * multf > $(window).width()){
 						var excedent =  maxX * multf - $(window).width();
@@ -42,14 +53,43 @@
 						multf = Math.round(multf - (multf * percentage));
 					}
 					
+					// Give information to processing.
+					var marginLeft = ($(window).width() - maxX * multf) / 2;
+					
+					pjs.addPosValue(maxX);
+					pjs.addPosValue(maxY);
+					pjs.addPosValue(multf);
+					pjs.addPosValue(marginLeft);
+					
 					// Add the sensors to the array list in processing.
 					for(p=0, end=data.length; p<end; p++) {
 						var sensor = data[p];
-						pjs.addSensor(sensor.identifier, sensor.x * multf, sensor.y * multf, sensor.radius);
+						pjs.addSensor(sensor.identifier, marginLeft + sensor.x * multf, sensor.y * multf, sensor.radius);
 					}
+					
+					// Start the refresh process every second.
+					(function(){	
+						// Get updated Time from server.
+						$.getJSON('http://127.0.0.1:80/hubnet/time?callback=?', function(data) {
+							var timeStamp = data.timeStamp;
+							
+							// Get update based on that time stamp.
+							$.getJSON('http://127.0.0.1:80/hubnet/lvf/' + id + '/' + '2014-12-15 15:11:44'/*timeStamp*/ + '?callback=?', function(data){
+								// Remove old participants.
+								pjs.clearParticipants();
+							
+								// Add participants to the visualization.
+								for(p=0, end=data.length; p<end; p++){
+									var participant = data[p];
+									pjs.addParticipant(participant.sensorID, participant.rssi, participant.tagID);
+								}
+							});
+						});
+						
+						setTimeout(arguments.callee, 2000);
+					})();
 				});
 			}
-			
 		</script>
 	</head>
 	<body onload="getCFG(3)">
