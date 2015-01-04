@@ -116,8 +116,8 @@ public class Wizard extends Activity{
 
 			// Pack values.
 			RecordData values[] = new RecordData[2]; 
-			values[0] = new RecordData("tag1test-457389", 18.2);
-			values[1] = new RecordData("tag2test-786784", 12);
+			values[0] = new RecordData("tag1test-457389", -18);
+			values[1] = new RecordData("tag2test-786784", -12);
 			ForwardData sample = new ForwardData(preferences.getString("eventid_preference", "-1"), preferences.getString("sensorid_preference", "-1"), values);
 
 			// Transmit the values.

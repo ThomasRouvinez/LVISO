@@ -20,31 +20,31 @@ def version(request):
 	return HttpResponse("v0.1A")
 	
 # Get the time of the webservice.
-def time(request):
+def time(request, diff):
 	if 'callback' in request.REQUEST:
 		# Send a JSONP response.
-		data = '%s({\'timeStamp\' : \'%s\'});' % (request.REQUEST['callback'], datetime.datetime.now().replace(microsecond=0))
+		data = '%s({\'timeStamp\' : \'%s\'});' % (request.REQUEST['callback'], (datetime.datetime.now() - datetime.timedelta(seconds=int(diff))).replace(microsecond=0))
 		return HttpResponse(data, "text/javascript")
 
-	return HttpResponse(str(datetime.datetime.now().replace(microsecond=0)))
+	return HttpResponse(str((datetime.datetime.now() - datetime.timedelta(seconds=int(diff))).replace(microsecond=0)))
 
 # Post a new record for an event & sensor.
 @csrf_exempt
-def input_record(request):	
+def input_record(request):
 	if request.method == 'POST':
 		try:
 			# Read data from the JSON payload.
 			raw = yaml.load(request.body)
 			str_data = str(raw).replace("'", '"')
 			data = json.loads(str_data)
-	
+			
 			i_eventID = data["eventID"]
 			i_sensorID = data["sensorID"]
 			i_timeStamp = data["timeStamp"]
 			i_records = data["records"]
 			
 			# Convert time stamps correctly.
-			c_timestamp = datetime.datetime.strptime(str(i_timeStamp), "%Y/%m/%d %H:%M:%S")
+			c_timestamp = datetime.datetime.strptime(str(i_timeStamp), "%Y-%m-%d %H:%M:%S")
 			
 			# Acquire relations in database.
 			e = Event.objects.get(pk=i_eventID)

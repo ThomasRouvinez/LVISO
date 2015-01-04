@@ -6,7 +6,7 @@
 final int rssiThreshold = 12;	// to be defined with real rests on the readers.
 final int width = window.innerWidth;
 final int height = window.innerHeight;
-final float framerate = 0.5;
+final float framerate = 1;
 final int tableSize = height / 12;
 final int firstRawSize = height / 7;
 
@@ -18,23 +18,30 @@ ArrayList positioningValues; //([0] = multf)
 // Hashmaps.
 HashMap<String,String> participantColor;
 HashMap<String,String> interestTags;
-HashMap<Integer,Integer> tableCount;
-HashMap<Integer,Integer> tableDrawn;
+HashMap<Integer,Integer> tableCountFirstRow;
+HashMap<Integer,Integer> tableDrawnFirstRow;
+HashMap<Integer,Integer> tableCountSecondRow;
+HashMap<Integer,Integer> tableDrawnSecondRow;
 
 // -----------------------------------------------------------
-// Setup.
+// Setup & Initialization.
 // -----------------------------------------------------------
 
 void setup() {
 	size(width,height);
 	frameRate(framerate);
+	
 	sensors = new ArrayList();
 	participants = new ArrayList();
 	positioningValues = new ArrayList();
+	
 	participantColor = new HashMap<String,String>();
 	interestTags = new HashMap<String,String>();
-	tableCount = new HashMap<Integer,Integer>();
-	tableDrawn = new HashMap<Integer,Integer>();
+	
+	tableCountFirstRow = new HashMap<Integer,Integer>();
+	tableDrawnFirstRow = new HashMap<Integer,Integer>();
+	tableCountSecondRow = new HashMap<Integer,Integer>();
+	tableDrawnSecondRow = new HashMap<Integer,Integer>();
 }
 
 // -----------------------------------------------------------
@@ -50,7 +57,7 @@ void draw(){
 	for(int p=0, end=sensors.size(); p<end; p++){
 		Sensor pt = (Sensor) sensors.get(p);
 		
-		if(tableCount.get(pt.id) > 0){
+		if(tableCountFirstRow.get(pt.id) > 0){
 			stroke(0,0,0);
 			fill(#000000);
 			ellipse(pt.x,pt.y,firstRawSize,firstRawSize);
@@ -62,8 +69,8 @@ void draw(){
 		Participant pa = (Participant) participants.get(p);
 		
 		// Compute slice representation.
-		float slice = 360.0 / tableCount.get(pa.sensor.id);
-		int drawn = tableDrawn.get(pa.sensor.id);
+		float slice = 360.0 / tableCountFirstRow.get(pa.sensor.id);
+		int drawn = tableDrawnFirstRow.get(pa.sensor.id);
 		
 		// Get appropriate color.
 		String tagColor = participantColor.get(pa.tagID);
@@ -73,7 +80,7 @@ void draw(){
 		fill(unhex(tagColor));
 		stroke(0, 0, 0);
 		drawSegment(pa.sensor.x, pa.sensor.y, firstRawSize, firstRawSize, (drawn * slice)+2, ((drawn + 1) * slice) -2);
-		tableDrawn.put(pa.sensor.id, tableDrawn.get(pa.sensor.id) + 1);
+		tableDrawnFirstRow.put(pa.sensor.id, tableDrawnFirstRow.get(pa.sensor.id) + 1);
 	}
 	
 	// Draw all sensors last to cover up the colors.
@@ -106,11 +113,11 @@ void addParticipantConfig(String tagID, String color){
 
 void clearParticipants(){
 	// Remove all participants from last iteration.
-	participants.clear();
+	participants = new ArrayList();
 	
-	for (Map.Entry entry : tableCount.entrySet()){
-		tableCount.put(entry.getKey(), 0);
-		tableDrawn.put(entry.getKey(), 0);
+	for (Map.Entry entry : tableCountFirstRow.entrySet()){
+		tableCountFirstRow.put(entry.getKey(), 0);
+		tableDrawnFirstRow.put(entry.getKey(), 0);
 	}
 }
 
@@ -174,8 +181,8 @@ class Sensor{
 		this.radius=radius;
 
 		// Initialize the tables.
-		tableCount.put(this.id, 0);
-		tableDrawn.put(this.id, 0);
+		tableCountFirstRow.put(this.id, 0);
+		tableDrawnFirstRow.put(this.id, 0);
 	}
 	
     void draw() {
@@ -202,7 +209,7 @@ class Participant{
 			
 			if(pt.id == sensorID){
 				this.sensor = pt;
-				tableCount.put(this.sensorID, tableCount.get(sensorID) + 1);
+				tableCountFirstRow.put(this.sensorID, tableCountFirstRow.get(sensorID) + 1);
 				break;
 			}
 		}

@@ -6,7 +6,7 @@ urlpatterns = patterns('',
     url(r'version', views.version, name='Version'),
 	
 	# General view, returns the version.
-    url(r'time', views.time, name='Time'),
+    url(r'time/(?P<diff>\d+)', views.time, name='Time'),
 	
 	# Inputs record data view, returns success value.
     url(r'irec/$', views.input_record, name='Input Record'),

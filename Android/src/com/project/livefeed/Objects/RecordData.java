@@ -14,7 +14,7 @@ public class RecordData {
 	// ---------------------------------------------------------------
 	
 	private String tag;
-	private double rssi;
+	private int rssi;
 	
 	// ---------------------------------------------------------------
 	// Constructor.
@@ -22,7 +22,7 @@ public class RecordData {
 	
 	public RecordData(){}
 	
-	public RecordData(String tag, double rssi){
+	public RecordData(String tag, int rssi){
 		this.tag = tag;
 		this.rssi = rssi;
 	}
@@ -37,10 +37,10 @@ public class RecordData {
 	public void setTag(String tag) {
 		this.tag = tag;
 	}
-	public double getRSSI() {
+	public int getRSSI() {
 		return rssi;
 	}
-	public void setRSSI(double rssi) {
+	public void setRSSI(int rssi) {
 		this.rssi = rssi;
 	}
 }

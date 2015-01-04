@@ -26,6 +26,8 @@
 				// Get the sensor configuration.
 				$.getJSON('http://127.0.0.1:80/hubnet/cfg'+id+'?callback=?', function(data) {
 					// Variables.
+					var oldTimeStamp;
+					var oldData;
 					var pjs = Processing.getInstanceById('processing');
 					var multf = 0.0;
 					var maxX = 0.0;
@@ -71,26 +73,31 @@
 						pjs.addSensor(sensor.identifier, marginLeft + sensor.x * multf, sensor.y * multf, sensor.radius);
 					}
 					
-					// Start the refresh process every second.
+					// Start the refresh process.
 					(function(){	
 						// Get updated Time from server.
-						$.getJSON('http://127.0.0.1:80/hubnet/time?callback=?', function(data) {
+						$.getJSON('http://127.0.0.1:80/hubnet/time/1?callback=?', function(data) {
 							var timeStamp = data.timeStamp;
 							
-							// Get update based on that time stamp.
-							$.getJSON('http://127.0.0.1:80/hubnet/lvf/' + id + '/' + '2014-12-15 15:11:44'/*timeStamp*/ + '?callback=?', function(data){
-								// Remove old participants.
-								pjs.clearParticipants();
-							
-								// Add participants to the visualization.
-								for(p=0, end=data.length; p<end; p++){
-									var participant = data[p];
-									pjs.addParticipant(participant.sensorID, participant.rssi, participant.tagID);
-								}
-							});
+							if(timeStamp != oldTimeStamp && data != oldData){
+								// Get update based on that time stamp.
+								$.getJSON('http://127.0.0.1:80/hubnet/lvf/' + id + '/' + timeStamp/*timeStamp*/ + '?callback=?', function(data){
+									// Remove old participants.
+									pjs.clearParticipants();
+								
+									// Add participants to the visualization.
+									for(p=0, end=data.length; p<end; p++){
+										var participant = data[p];
+										pjs.addParticipant(participant.sensorID, participant.rssi, participant.tagID);
+									}
+									
+									oldTimeStamp = timeStamp;
+									oldData = data;
+								});
+							}
 						});
 						
-						setTimeout(arguments.callee, 2000);
+						setTimeout(arguments.callee, 1000);
 					})();
 				});
 			}
