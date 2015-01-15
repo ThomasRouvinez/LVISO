@@ -23,6 +23,7 @@ class InterestTag(models.Model):
 # DB Participant fields.
 class Participant(models.Model):
 	tagId = models.CharField(max_length=255)
+	sex = models.CharField(max_length=1, blank=True, null=True)
 	interestTag = models.ForeignKey(InterestTag, blank=True, null=True)
 	
 	def __str__(self):
@@ -31,6 +32,7 @@ class Participant(models.Model):
 	def as_json(self):
 		return dict(
 			tagID = str(self.tagId),
+			sex = str(self.sex),
 			interestTag = self.interestTag.as_json())
 		
 	class Meta:
@@ -42,6 +44,7 @@ class Sensor(models.Model):
 	description = models.CharField(max_length=200)
 	x = models.FloatField()
 	y = models.FloatField()
+	rssiThreshold = models.FloatField()
 	radius = models.FloatField()
 	
 	def __str__(self):
@@ -53,6 +56,7 @@ class Sensor(models.Model):
 			description = str(self.description),
 			x = self.x,
 			y = self.y,
+			rssiThreshold = self.rssiThreshold,
 			radius = self.radius)
 		
 	class Meta:

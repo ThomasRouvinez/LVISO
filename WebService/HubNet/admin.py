@@ -33,6 +33,7 @@ class ParticipantsInline(admin.TabularInline):
 class ParticipantsAdmin(admin.ModelAdmin):
 	fieldsets = [
 		(None, {'fields': ['tagId']}),
+		(None, {'fields': ['sex']}),
 		(None, {'fields': ['interestTag']}),
 	]
 	
@@ -47,7 +48,7 @@ class SensorsInline(admin.TabularInline):
 class SensorsAdmin(admin.ModelAdmin):
 	fieldsets = [
 		('Sensor Identification', {'fields': ['identifier', 'description']}),
-		('Properties', {'fields': ['x', 'y', 'radius']}),
+		('Properties', {'fields': ['x', 'y', 'radius', 'rssiThreshold']}),
 	]
 	
 # --------------------------------------------------
