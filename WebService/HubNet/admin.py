@@ -48,7 +48,7 @@ class SensorsInline(admin.TabularInline):
 class SensorsAdmin(admin.ModelAdmin):
 	fieldsets = [
 		('Sensor Identification', {'fields': ['identifier', 'description']}),
-		('Properties', {'fields': ['x', 'y', 'radius', 'rssiThreshold']}),
+		('Properties', {'fields': ['x', 'y', 'radius', 'rssiThreshold', 'displayable']}),
 	]
 	
 # --------------------------------------------------

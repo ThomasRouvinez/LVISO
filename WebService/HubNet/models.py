@@ -46,6 +46,7 @@ class Sensor(models.Model):
 	y = models.FloatField()
 	rssiThreshold = models.FloatField()
 	radius = models.FloatField()
+	displayable = models.BooleanField(initial=True)
 	
 	def __str__(self):
 		return "Sensor: " + self.description

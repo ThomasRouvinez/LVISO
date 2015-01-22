@@ -7,16 +7,22 @@ final int rssiThreshold = 12;	// to be defined with real rests on the readers.
 final int width = window.innerWidth;
 final int height = window.innerHeight;
 final float framerate = 1;
-final int tableSize = height / 12;
+final int tableSize = height / 12.5;
 final int firstRawSize = height / 7;
 
 // Lists.
 ArrayList sensors;
 ArrayList participants;
+ArrayList participantsTemp;
+ArrayList participantsOld;
 ArrayList positioningValues; //([0] = multf)
+
+// Matrices.
+int[][] slidingWindow;
 
 // Hashmaps.
 HashMap<String,String> participantColor;
+HashMap<String,Integer> participantAVGIndex;
 HashMap<String,String> interestTags;
 HashMap<Integer,Integer> tableCountFirstRow;
 HashMap<Integer,Integer> tableDrawnFirstRow;
@@ -33,9 +39,12 @@ void setup() {
 	
 	sensors = new ArrayList();
 	participants = new ArrayList();
+	participantsTemp = new ArrayList();
+	participantsOld = new ArrayList();
 	positioningValues = new ArrayList();
 	
 	participantColor = new HashMap<String,String>();
+	participantAVGIndex = new HashMap<String,Integer>();
 	interestTags = new HashMap<String,String>();
 	
 	tableCountFirstRow = new HashMap<Integer,Integer>();
@@ -65,29 +74,32 @@ void draw(){
 	}
 	
 	// Draw all participants.
-	for(int p=0, end=participants.size(); p<end; p++){
-		Participant pa = (Participant) participants.get(p);
+	for(int p=0, end=participantsOld.size() ; p < end ; p++){
+		Participant pa = (Participant) participantsOld.get(p);
 		
-		// Compute slice representation.
-		float slice = 360.0 / tableCountFirstRow.get(pa.sensor.id);
-		int drawn = tableDrawnFirstRow.get(pa.sensor.id);
-		
-		// Get appropriate color.
-		String tagColor = participantColor.get(pa.tagID);
-		tagColor = "FF" + tagColor;
-		
-		// Draw the participant.
-		fill(unhex(tagColor));
-		stroke(0, 0, 0);
-		drawSegment(pa.sensor.x, pa.sensor.y, firstRawSize, firstRawSize, (drawn * slice)+2, ((drawn + 1) * slice) -2);
-		tableDrawnFirstRow.put(pa.sensor.id, tableDrawnFirstRow.get(pa.sensor.id) + 1);
+		// Draw in the same order common participants.
+		if(participants.contains(pa) == true){
+			participantsTemp.add(pa);
+			participants.remove(pa);
+			drawParticipant(pa);
+		}
+	}
+	
+	// Draw the rest of the participants.
+	for(int k=0, end=participants.size() ; k < end ; k++){
+		Participant pb = (Participant) participants.get(k);
+		participantsTemp.add(pb);
+		drawParticipant(pb);
 	}
 	
 	// Draw all sensors last to cover up the colors.
-	for(int p=0, end=sensors.size(); p<end; p++){
+	for(int p=0; p < sensors.size(); p++){
 		Sensor pt = (Sensor) sensors.get(p);
-		pt.draw(); 
+		pt.draw();
 	}
+	
+	clearParticipants();
+	noLoop();
 }
 
 // -----------------------------------------------------------
@@ -101,7 +113,11 @@ Sensor addSensor(int id, int x, int y, int radius){
 }
 
 Participant addParticipant(int sensorID, float rssi, String tagID){
-	Participant pa = new Participant(sensorID, rssi, tagID);
+	// Update the sliding window and get the smoothed value for the sensorID.
+	slidingWindow[0][participantAVGIndex.get(tagID)] = sensorID;
+	
+	// Add new participant.
+	Participant pa = new Participant(getSlidingWindowAVG(participantAVGIndex.get(tagID)), rssi, tagID);
 	participants.add(pa);
 	return pa;
 }
@@ -111,8 +127,57 @@ void addParticipantConfig(String tagID, String color){
 	participantColor.put(tagID, tagColor);
 }
 
+void addParticipantIndex(String tagID, int index){
+	participantAVGIndex.put(tagID, index);
+}
+
+void createSlidingWindow(size){
+	slidingWindow = new int[2][size];
+	
+	// Initialize the matrix when first configuring the view.
+	for(int i = 0 ; i < 2 ; i++){
+		for(int j = 0 ; j < size ; j++){
+			slidingWindow[i][j] = 0;
+		}
+	}
+}
+
+int getSlidingWindowAVG(int participantIndex){
+	// Check if any activity is recorded.
+	if(slidingWindow[0][participantIndex] == 0 && slidingWindow[0][participantIndex] == 0){
+		return 0;
+	}
+	else{
+		int sum = 0;
+		int count = 0;
+	
+		// Compute the avg in the sliding window.
+		for(int i = 0 ; i < slidingWindow.length ; i++){
+			if(slidingWindow[i][participantIndex] != 0){
+				sum += slidingWindow[i][participantIndex];
+				count += 1;
+			}
+		}
+		
+		return round(sum / count);
+	}
+}
+
 void clearParticipants(){
+	// Shift all the values in the sliding window.
+	for(int i = slidingWindow.length -1 ; i > 0 ; i--){
+		for(int j = 0 ; j < slidingWindow[0].length ; j++){
+			slidingWindow[i][j] = slidingWindow[i-1][j];
+		}
+	}
+	
+	for(int k = 0 ; k < slidingWindow[0].length ; k++){
+		slidingWindow[0][k] = 0;
+	}
+
 	// Remove all participants from last iteration.
+	participantsOld = participantsTemp;
+	participantsTemp = new ArrayList();
 	participants = new ArrayList();
 	
 	for (Map.Entry entry : tableCountFirstRow.entrySet()){
@@ -136,14 +201,32 @@ void drawSegment(int x, int y, int width, int height, float startAngle, float st
 	arc(x, y, width, height, radians(startAngle), radians(stopAngle));
 }
 
+void drawParticipant(Participant pa){
+	if(pa.sensorID != 0){
+		// Compute slice representation.
+		float slice = 360.0 / tableCountFirstRow.get(pa.sensorID);
+		int drawn = tableDrawnFirstRow.get(pa.sensorID);
+		
+		// Get appropriate color.
+		String tagColor = participantColor.get(pa.tagID);
+		tagColor = "FF" + tagColor;
+		
+		// Draw the participant.
+		fill(unhex(tagColor));
+		stroke(0, 0, 0);
+		drawSegment(pa.sensor.x, pa.sensor.y, firstRawSize, firstRawSize, (drawn * slice)+2, ((drawn + 1) * slice) -2);
+		tableDrawnFirstRow.put(pa.sensorID, tableDrawnFirstRow.get(pa.sensorID) + 1);
+	}
+}
+
 void drawLegendBar(){
 	// Compute display.
-	int loop = 0;
 	int count = interestTags.size();
-	int spacing = (width - (width / 10)) / count;
-	int leftMargin = (width / 20);
-	int topMargin = height-(height / 11);
-	int fontSize = width / 55;
+	int spacing = (width - (width / 100)) / count;
+	int leftMargin = (width / 100);
+	int topMargin = height -(height / 10);
+	int fontSize = width / 90;
+	long tabulation = leftMargin;
 	
 	// Draw the bar.
 	fill(#000000);
@@ -155,15 +238,15 @@ void drawLegendBar(){
 		String tagColor = entry.getKey();
 		tagColor = "FF" + tagColor;
 		
-		// Draw the participant.
+		// Draw color tag and text.
 		fill(unhex(tagColor));
-		rect(leftMargin + (loop * spacing), topMargin, (height / 20), (height / 20));
+		rect(tabulation, topMargin + (height/100), (height / 22), (height / 22));
 		
 		fill(#ffffff);
 		textSize(fontSize);
-		text(entry.getValue(), leftMargin + (loop * spacing) + (height / 18), topMargin + (height / 25)); 
-		
-		loop += 1;
+		text(entry.getValue(), tabulation + (height / 20), topMargin + (height / 25)); 
+
+		tabulation += textWidth(entry.getValue()) + (height / 10);
 	}
 }
 
