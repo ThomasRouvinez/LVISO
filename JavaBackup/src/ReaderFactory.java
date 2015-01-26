@@ -43,8 +43,7 @@ public class ReaderFactory extends Thread{
 			Main.instances[this.index] = Reader.create("tmr:///" + comPort);
 			Main.instances[this.index].connect();
 
-			if (Reader.Region.UNSPEC == (Reader.Region)Main.instances[this.index].paramGet("/reader/region/id"))
-			{
+			if (Reader.Region.UNSPEC == (Reader.Region)Main.instances[this.index].paramGet("/reader/region/id")){
 				Reader.Region[] supportedRegions = (Reader.Region[])Main.instances[this.index].paramGet(TMConstants.TMR_PARAM_REGION_SUPPORTEDREGIONS);
 				if (supportedRegions.length < 1){
 					throw new Exception("Reader doesn't support any regions");
@@ -53,10 +52,10 @@ public class ReaderFactory extends Thread{
 					Main.instances[this.index].paramSet("/reader/region/id", supportedRegions[0]);
 				}
 			}
-			
+
 			// Console output.
 			System.out.println(new Date().toLocaleString() + "> Reader " + sensorID + " created and listening"); 
-			
+
 			// Read tags
 			while(Main.threadDone == false){
 				tagReads = Main.instances[this.index].read(400);
@@ -86,11 +85,13 @@ public class ReaderFactory extends Thread{
 
 						// Add each record.
 						for(int i = 0 ; i < sample.getValues().length ; i++){
-							jsonValue += "{\"tag\" : \"" + sample.getValues()[i].getTag() + "\" ," +
-									"\"rssi\" : " + sample.getValues()[i].getRSSI() + "}";
+							if(sample.getValues()[i] != null){
+								jsonValue += "{\"tag\" : \"" + sample.getValues()[i].getTag() + "\" ," +
+										"\"rssi\" : " + sample.getValues()[i].getRSSI() + "}";
 
-							if(i + 1 != sample.getValues().length){
-								jsonValue += ", ";
+								if(i + 1 != sample.getValues().length){
+									jsonValue += ", ";
+								}
 							}
 						}
 

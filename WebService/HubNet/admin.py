@@ -1,5 +1,5 @@
 from django.contrib import admin
-from HubNet.models import InterestTag, Event, Sensor, Participant, Record
+from HubNet.models import InterestTag, Event, Sensor, Participant, Record, Marker
 
 # Author: Thomas "Raste" Rouvinez
 # Creation date: 2014.11.18
@@ -32,10 +32,13 @@ class ParticipantsInline(admin.TabularInline):
 	
 class ParticipantsAdmin(admin.ModelAdmin):
 	fieldsets = [
-		(None, {'fields': ['tagId']}),
+		(None, {'fields': ['reference','tagId']}),
 		(None, {'fields': ['sex']}),
 		(None, {'fields': ['interestTag']}),
 	]
+	
+	list_display = ('reference', 'tagId', 'interestTag')
+	search_fields = ['reference', 'interestTag', 'tagId']
 	
 # --------------------------------------------------
 # Sensors.
@@ -49,6 +52,19 @@ class SensorsAdmin(admin.ModelAdmin):
 	fieldsets = [
 		('Sensor Identification', {'fields': ['identifier', 'description']}),
 		('Properties', {'fields': ['x', 'y', 'radius', 'rssiThreshold', 'displayable']}),
+	]
+	
+# --------------------------------------------------
+# Marker.
+# --------------------------------------------------
+
+class MarkersInline(admin.TabularInline):
+	model = Marker
+	extra = 1
+
+class MarkersAdmin(admin.ModelAdmin):
+	fieldsets = [
+		('Marker information', {'fields': ['timeStamp', 'label', 'event']})
 	]
 	
 # --------------------------------------------------
@@ -69,7 +85,7 @@ class EventAdmin(admin.ModelAdmin):
 		(None, {'fields': ['startDate', 'stopDate']}),
 	]
 
-	inlines = [InterestTagInline, SensorsInline, ParticipantsInline]
+	inlines = [InterestTagInline, SensorsInline, MarkersInline, ParticipantsInline]
 	list_display = ('name', 'startDate')
 	search_fields = ['name', 'startDate']
 	
@@ -78,3 +94,4 @@ admin.site.register(InterestTag, InterestTagAdmin)
 admin.site.register(Participant, ParticipantsAdmin)
 admin.site.register(Sensor, SensorsAdmin)
 admin.site.register(Record, RecordAdmin)
+admin.site.register(Marker, MarkersAdmin)

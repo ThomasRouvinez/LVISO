@@ -78,7 +78,7 @@
 					// Start the refresh process.
 					(function(){	
 						// Get updated Time from server.
-						$.getJSON('http://127.0.0.1:80/hubnet/time/2?callback=?', function(data) {
+						$.getJSON('http://127.0.0.1:80/hubnet/time/4?callback=?', function(data) {
 							var timeStamp = data.timeStamp;
 							
 							if(timeStamp != oldTimeStamp && data != oldData){
@@ -99,7 +99,7 @@
 							}
 						});
 						
-						setTimeout(arguments.callee, 2000);
+						setTimeout(arguments.callee, 4000);
 					})();
 				});
 			}

@@ -38,6 +38,9 @@ public class Main {
 	private static Text console;
 	private static Text serverIP;
 	private static Label serverIPLabel;
+	private static Label markerLabel;
+	private static Text markerText;
+	private static Button buttonMarker;
 	private static String configurationPath = "default.cfg";
 
 	/**
@@ -48,7 +51,7 @@ public class Main {
 		final Display display = new Display ();
 		final Shell shell = new Shell(display);
 		shell.setText("Reader Controller");
-		shell.setMinimumSize(new Point(720, 500));
+		shell.setMinimumSize(new Point(720, 670));
 
 		// -----------------------------------------------------------------------------
 		// Server settings.
@@ -57,10 +60,39 @@ public class Main {
 		serverIP = new Text(shell, 1);
 		serverIP.setBounds(360, 0, 360, 25);
 		serverIP.setText("127.0.0.1");
+		serverIP.setToolTipText("The IP address of the web service host.");
 		serverIPLabel = new Label(shell, 1);
 		serverIPLabel.setText("Server IP Address");
-		serverIPLabel.setBounds(0,  0,  360, 25);
+		serverIPLabel.setBounds(0, 0, 360, 25);
+		
+		// -----------------------------------------------------------------------------
+		// Marker setter.
+		// -----------------------------------------------------------------------------
 
+		markerLabel = new Label(shell, 1);
+		markerLabel.setText("Time Marker");
+		markerLabel.setBounds(0, 520, 360, 20);
+		markerText = new Text(shell, 1);
+		markerText.setToolTipText("Type in the label of the new time marker to add.");
+		markerText.setBounds(0, 545, 360, 25);
+		buttonMarker = new Button(shell, 1);
+		buttonMarker.setText("Add Marker");
+		buttonMarker.setBounds(360, 545, 360, 25);
+		
+		buttonMarker.addSelectionListener(new SelectionListener() {
+			public void widgetSelected(SelectionEvent event) {
+				if(markerText.getText() != ""){	
+					MarkerUtils.recordMarker(serverIP.getText(), 3, markerText.getText());
+					markerText.setText("");
+				}
+				else{
+					System.out.println("> No text was set for the marker.");
+				}
+			}
+
+			public void widgetDefaultSelected(SelectionEvent event) {}
+		});
+		
 		// -----------------------------------------------------------------------------
 		// Buttons.
 		// -----------------------------------------------------------------------------

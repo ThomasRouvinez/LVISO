@@ -60,8 +60,8 @@ public class TimeUtils {
 	}
 	
 	public static String formatDate(Calendar calendar){
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat customFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		return format.format(calendar.getTime());
+		return customFormat.format(calendar.getTime());
 	}
 }

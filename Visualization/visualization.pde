@@ -132,10 +132,10 @@ void addParticipantIndex(String tagID, int index){
 }
 
 void createSlidingWindow(size){
-	slidingWindow = new int[2][size];
+	slidingWindow = new int[5][size];
 	
 	// Initialize the matrix when first configuring the view.
-	for(int i = 0 ; i < 2 ; i++){
+	for(int i = 0 ; i < slidingWindow.length ; i++){
 		for(int j = 0 ; j < size ; j++){
 			slidingWindow[i][j] = 0;
 		}
@@ -144,22 +144,34 @@ void createSlidingWindow(size){
 
 int getSlidingWindowAVG(int participantIndex){
 	// Check if any activity is recorded.
-	if(slidingWindow[0][participantIndex] == 0 && slidingWindow[0][participantIndex] == 0){
+	if(slidingWindow[0][participantIndex] == 0){
 		return 0;
 	}
 	else{
-		int sum = 0;
-		int count = 0;
+		HashMap<Integer, Integer> cache = new HashMap<Integer, Integer>();
 	
-		// Compute the avg in the sliding window.
+		// Compute the number of occurences in the sliding window.
 		for(int i = 0 ; i < slidingWindow.length ; i++){
-			if(slidingWindow[i][participantIndex] != 0){
-				sum += slidingWindow[i][participantIndex];
-				count += 1;
+			if(cache.containsKey(slidingWindow[i][participantIndex])){
+				cache.put(slidingWindow[i][participantIndex], cache.get(slidingWindow[i][participantIndex]) + 1);
+			}
+			else{
+				cache.put(slidingWindow[i][participantIndex], 1);
+			}
+		}
+
+		// Select biggest number of occurences.
+		int value = 0;
+		int occurencesMax = 0;
+		
+		for (Map.Entry<Integer, Integer> entry : cache.entrySet()) {
+			if(entry.getValue() > occurencesMax){
+				occurencesMax = entry.getValue();
+				value = entry.getKey();
 			}
 		}
 		
-		return round(sum / count);
+		return value;
 	}
 }
 

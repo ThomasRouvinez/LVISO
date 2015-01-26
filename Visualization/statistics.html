@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="utf-8">
+		<meta property='og:title' content='MetricsGraphics.js' />
+		<title>Statistics</title>
+		
+		<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+		<script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+		<script src='js/lib/highlight.pack.js'></script>
+		<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.0/d3.min.js' charset='utf-8'></script>
+		
+		<script src='metricsgraphics.js'></script>
+		
+		<link rel="stylesheet" type="text/css" href="metricsgraphics.css"></link>
+		<link rel="stylesheet" type="text/css" href="metricsgraphics_demo.css"></link>
+
+		<script type="text/javascript">
+			function drawGraph() {
+				$.getJSON('http://127.0.0.1/hubnet/statdata/3/3?callback=?', function(data){
+					$.getJSON('http://127.0.0.1/hubnet/statmrkr/3?callback=?', function(mrkrs){
+						MG.data_graphic({
+							title: "Sensor 3",
+							description: "This graphic shows the tags read over time.",
+							data: data,
+							width: 1280,
+							height: 300,
+							target: '#sensor',
+							x_accessor: 'time',
+							y_accessor: 'value',
+							markers: mrkrs
+						});
+					});
+				});
+			}
+		</script>
+	</head>
+	
+	<body onLoad="drawGraph()">
+		<div id="sensor"></div>
+	</body>
+</html>
