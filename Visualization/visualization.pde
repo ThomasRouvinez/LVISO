@@ -96,6 +96,10 @@ void draw(){
 	for(int p=0; p < sensors.size(); p++){
 		Sensor pt = (Sensor) sensors.get(p);
 		pt.draw();
+		
+		fill(#ffffff);
+		textSize(30);
+		text("" + pt.id, pt.x - (textWidth("" + pt.id)/2), pt.y + 10);
 	}
 	
 	clearParticipants();
