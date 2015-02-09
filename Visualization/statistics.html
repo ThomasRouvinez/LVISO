@@ -16,27 +16,41 @@
 		<link rel="stylesheet" type="text/css" href="metricsgraphics_demo.css"></link>
 
 		<script type="text/javascript">
-			function drawGraph() {
-				$.getJSON('http://127.0.0.1/hubnet/statdata/3/3?callback=?', function(data){
-					$.getJSON('http://127.0.0.1/hubnet/statmrkr/3?callback=?', function(mrkrs){
+			function drawGraph(){
+				for(i = 1 ; i < 14; i++){
+					var paths = "'#sensor" + i + "'";
+					
+					d3.json("statistics/Raw Seconds/sensor1.json", function(data) {
 						MG.data_graphic({
-							title: "Sensor 3",
-							description: "This graphic shows the tags read over time.",
+							title: 'Sensor 1',
 							data: data,
-							width: 1280,
-							height: 300,
-							target: '#sensor',
+							width: 2400,
+							height: 320,
+							target: '#sensor1',
 							x_accessor: 'time',
 							y_accessor: 'value',
-							markers: mrkrs
+							markers: [{"time": 881, "\label": "Presentation Sichh"}, {"time": 1460, "\label": "First Presentation"}, {"time": 2161, "\label": "First Networking"}, {"time": 2756, "\label": "Second Talk"}, {"time": 3418, "\label": "Second Networking"}, {"time": 4034, "\label": "Third Talk"}, {"time": 4967, "\label": "Third Networking"}, {"time": 5586, "\label": "Fourth Talk"}, {"time": 6418, "\label": "SICHH"}, {"time": 6512, "label": "Buffet"}],
 						});
-					});
-				});
+					})
+				}
 			}
 		</script>
 	</head>
 	
 	<body onLoad="drawGraph()">
-		<div id="sensor"></div>
+		<div id="sensor1" style="height:350px"></div>
+		<div id="sensor2" style="height:350px"></div>
+		<div id="sensor3" style="height:350px"></div>
+		<div id="sensor4" style="height:350px"></div>
+		<div id="sensor5" style="height:350px"></div>
+		<div id="sensor6" style="height:350px"></div>
+		<div id="sensor7" style="height:350px"></div>
+		<div id="sensor8" style="height:350px"></div>
+		<div id="sensor9" style="height:350px"></div>
+		<div id="sensor10" style="height:350px"></div>
+		<div id="sensor11" style="height:350px"></div>
+		<div id="sensor12" style="height:350px"></div>
+		<div id="sensor13" style="height:350px"></div>
+		<div id="sensor14" style="height:350px"></div>
 	</body>
 </html>
